@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 #region snippet_Usings
 using ContosoUniversity.Data;
 using Microsoft.EntityFrameworkCore;
+using ContosoUniversity.Services;
 #endregion
 
 namespace ContosoUniversity
@@ -30,6 +27,9 @@ namespace ContosoUniversity
               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc();
+
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
         }
         #endregion
 

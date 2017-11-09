@@ -1,20 +1,22 @@
 using ContosoUniversity.Models;
+using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ContosoUniversity.Pages.Courses
 {
     public class CreateModel : PageModel
     {
-        private readonly ContosoUniversity.Data.SchoolContext _context;
+        private readonly ICourseService _courseService;
+        private readonly IDepartmentService _departmentService;
 
-        public CreateModel(ContosoUniversity.Data.SchoolContext context)
+        public CreateModel(ICourseService courseService,
+                           IDepartmentService departmentService)
         {
-            _context = context;
+            _courseService = courseService;
+            _departmentService = departmentService;
         }
 
         public IActionResult OnGet()
@@ -25,6 +27,9 @@ namespace ContosoUniversity.Pages.Courses
 
         [BindProperty]
         public Course Course { get; set; }
+
+        [BindProperty]
+        public SelectList SL_DepartmentID { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -40,8 +45,7 @@ namespace ContosoUniversity.Pages.Courses
                  "course",   // Prefix for form value.
                  s => s.CourseID, s => s.DepartmentID, s => s.Title, s => s.Credits))
             {
-                _context.Courses.Add(emptyCourse);
-                await _context.SaveChangesAsync();
+                await _courseService.AddCourseAsync(emptyCourse);
                 return RedirectToPage("./Index");
             }
 
@@ -51,11 +55,10 @@ namespace ContosoUniversity.Pages.Courses
 
         private void PopulateDepartmentsDropDownList(object selectedDepartment = null)
         {
-            var departmentsQuery = from d in _context.Departments
-                                   orderby d.Name
-                                   select d;
-            ViewData["DepartmentID"] = new SelectList(departmentsQuery.AsNoTracking(),
-                "DepartmentID", "Name", selectedDepartment);
+            var departmentsQuery = _departmentService.GetOrderedDepartments();
+
+            SL_DepartmentID = 
+                new SelectList(departmentsQuery, "DepartmentID", "Name", selectedDepartment);
         }
     }
 }
