@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ContosoUniversity.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using ContosoUniversity.Data;
-using ContosoUniversity.Models;
+using System.Threading.Tasks;
 
 namespace ContosoUniversity.Pages.Students
 {
@@ -22,6 +18,7 @@ namespace ContosoUniversity.Pages.Students
         [BindProperty]
         public Student Student { get; set; }
 
+        #region snippet_OnGetAsync
         public async Task<IActionResult> OnGetAsync(int? id, bool? saveChangesError = false)
         {
             if (id == null)
@@ -31,7 +28,7 @@ namespace ContosoUniversity.Pages.Students
 
             Student = await _context.Students
                 .AsNoTracking()
-                .SingleOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync (m => m.ID == id);
 
             if (Student == null)
             {
@@ -45,7 +42,9 @@ namespace ContosoUniversity.Pages.Students
 
             return Page();
         }
+        #endregion
 
+        #region snippet_OnPostAsync
         public async Task<IActionResult> OnPostAsync(int? id)
         {
             if (id == null)
@@ -55,7 +54,7 @@ namespace ContosoUniversity.Pages.Students
 
             var student = await _context.Students
                             .AsNoTracking()
-                            .SingleOrDefaultAsync(m => m.ID == id);
+                            .FirstOrDefaultAsync (m => m.ID == id);
 
             if (student == null)
             {
@@ -71,9 +70,10 @@ namespace ContosoUniversity.Pages.Students
             catch (DbUpdateException /* ex */)
             {
                 //Log the error (uncomment ex variable name and write a log.)
-                return RedirectToAction("./Delete",
+                return RedirectToAction("./Delete", 
                                      new { id = id, saveChangesError = true });
             }
         }
+        #endregion
     }
 }

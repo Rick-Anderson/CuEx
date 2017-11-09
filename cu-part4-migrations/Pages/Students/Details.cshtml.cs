@@ -21,6 +21,7 @@ namespace ContosoUniversity.Pages.Students
 
         public Student Student { get; set; }
 
+        #region snippet_Details
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -32,7 +33,7 @@ namespace ContosoUniversity.Pages.Students
                                 .Include(s => s.Enrollments)
                                     .ThenInclude(e => e.Course)
                                 .AsNoTracking()
-                                .SingleOrDefaultAsync(m => m.ID == id);
+                                .FirstOrDefaultAsync (m => m.ID == id);
 
             if (Student == null)
             {
@@ -40,5 +41,6 @@ namespace ContosoUniversity.Pages.Students
             }
             return Page();
         }
+        #endregion
     }
 }
